@@ -21,19 +21,10 @@ public class Environment {
 	public static final String ZK_CONSUMER_PATH = ZK_BASE_PATH.concat("/consumer");
 
 	/**
-	 * zk config file
-	 */
-	private static final String ZK_ADDRESS_FILE = "/data/webapps/xxl-conf.properties";
-
-	/**
 	 * zk address
 	 */
-	public static final String ZK_ADDRESS;		// zk地址：格式	ip1:port,ip2:port,ip3:port
-	
-	static {
-		Properties prop = PropertiesUtil.loadFileProperties(ZK_ADDRESS_FILE);
-		ZK_ADDRESS = PropertiesUtil.getString(prop, "zkserver");
-	}
+	public static final String ZK_ADDRESS = "127.0.0.1:2181";		// zk地址：格式	ip1:port,ip2:port,ip3:port
+
 	
 	public static void main(String[] args) {
 		System.out.println(ZK_ADDRESS);
