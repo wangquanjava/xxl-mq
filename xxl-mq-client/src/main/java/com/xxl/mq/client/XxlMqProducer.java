@@ -59,7 +59,7 @@ public class XxlMqProducer {
         message.setStatus(MessageStatus.NEW.name());
         message.setRetryCount(retryCount);
 
-        XxlMqClient.getXxlMqService().saveMessage(message);
+        XxlMqClient.getiXxlMqBroker().saveMessage(message);
     }
 
     /**

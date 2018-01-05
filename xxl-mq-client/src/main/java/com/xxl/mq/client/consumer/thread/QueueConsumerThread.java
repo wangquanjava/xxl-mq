@@ -48,7 +48,7 @@ public class QueueConsumerThread extends Thread {
                     logger.info(">>>>>>>>>>> xxl-mq, isActice: consumer={}, ActiveInfo={}", annotation, checkPull.toString());
 
                     // load
-                    List<XxlMqMessage> messageList = XxlMqClient.getXxlMqService().pullNewMessage(annotation.value(), pagesize, checkPull.rank, checkPull.total);
+                    List<XxlMqMessage> messageList = XxlMqClient.getiXxlMqBroker().pullNewMessage(annotation.value(), pagesize, checkPull.rank, checkPull.total);
                     if (messageList != null && messageList.size() > 0) {
                         waitTim = 0;
                         for (XxlMqMessage msg : messageList) {
@@ -63,7 +63,7 @@ public class QueueConsumerThread extends Thread {
 
                             // lock message
                             String lockAddMsg = MessageFormat.format("<hr>》》》时间: {0} <br>》》》操作: 消息锁定(status>>>ING)<br>》》》注册信息: {1}", tim, checkConsume.toString());
-                            int lockRet = XxlMqClient.getXxlMqService().lockMessage(msg.getId(), lockAddMsg);
+                            int lockRet = XxlMqClient.getiXxlMqBroker().lockMessage(msg.getId(), lockAddMsg);
                             if (lockRet < 1) {
                                 continue;
                             }
@@ -86,7 +86,7 @@ public class QueueConsumerThread extends Thread {
                                 msg.setStatus(MessageStatus.FAIL.name());
                                 msg.setMsg(MessageFormat.format("<hr>》》》时间: {0} <br>》》》操作: 消息消费失败(status>>>FAIL) <br>》》》注册信息: {1} <br>》》》日志:{2}", tim, checkConsume.toString(), e.getMessage()));
                             } finally {
-                                XxlMqClient.getXxlMqService().consumeCallbackMessage(msg);
+                                XxlMqClient.getiXxlMqBroker().consumeCallbackMessage(msg);
                                 logger.info(">>>>>>>>>> xxl-mq, consumer message: {}", msg);
                             }
 
