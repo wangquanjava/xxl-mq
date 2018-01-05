@@ -19,7 +19,7 @@
     </appender>
 
     <root>
-        <level value="INFO" />
+        <level value="debug" />
         <appender-ref ref="CONSOLE" />
         <appender-ref ref="FILE" />
     </root>
