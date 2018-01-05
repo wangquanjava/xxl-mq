@@ -13,14 +13,14 @@ import java.util.concurrent.CountDownLatch;
 public class XxlMqClient {
     private final static Logger logger = LoggerFactory.getLogger(XxlMqClient.class);
 
-    private static IXxlMqBroker xxlMqService;
-    public static IXxlMqBroker getXxlMqService() {
-        if (xxlMqService!=null) {
-            return xxlMqService;
+    private static IXxlMqBroker iXxlMqBroker;
+    public static IXxlMqBroker getiXxlMqBroker() {
+        if (iXxlMqBroker !=null) {
+            return iXxlMqBroker;
         }
         CountDownLatch countDownLatch = new CountDownLatch(1);
         try {
-            xxlMqService = (IXxlMqBroker) new NetComClientProxy(IXxlMqBroker.class, 1000 * 5, null).getObject();
+            iXxlMqBroker = (IXxlMqBroker) new NetComClientProxy(IXxlMqBroker.class, 1000 * 5, null).getObject();
         } catch (Exception e) {
             logger.error("", e);
         } finally {
@@ -31,7 +31,7 @@ public class XxlMqClient {
         } catch (InterruptedException e) {
             logger.error("", e);
         }
-        return xxlMqService;
+        return iXxlMqBroker;
     }
 
 }

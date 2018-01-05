@@ -34,8 +34,8 @@ public class NetComClientProxy implements FactoryBean<Object> {
 	// ---------------------- init client, operate ----------------------
 	@Override
 	public Object getObject() throws Exception {
-		return Proxy.newProxyInstance(Thread.currentThread()
-				.getContextClassLoader(), new Class[] { iface },
+		return Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(),
+				new Class[] { iface },
 				new InvocationHandler() {
 					@Override
 					public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {

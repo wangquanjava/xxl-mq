@@ -81,7 +81,7 @@ public class NettyClient {
 	public static RpcResponse send(RpcRequest request) throws Exception {
 
 		try {
-			String address = ZkServiceDiscovery.discover(request.getRegistryKey());
+			String address = ZkServiceDiscovery.discover(request.getRegistryKey()); // 获取broker地址
 			if (address == null) {
 				throw new RuntimeException(">>>>>>>>>>> xxl-rpc, no address from service:" + request.getClassName());
 			}
