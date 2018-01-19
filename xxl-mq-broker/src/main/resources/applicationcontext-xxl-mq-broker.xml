@@ -9,7 +9,7 @@
 	<bean id="xxlMqMessageDao" class="com.xxl.mq.broker.dao.impl.XxlMqMessageDaoImpl" />
 
 	<!-- broker server -->
-	<bean class="com.xxl.mq.client.broker.XxlMqBroker" init-method="init" destroy-method="destroy" >
+	<bean class="com.xxl.mq.broker.broker.impl.XxlMqBrokerImpl" init-method="init" destroy-method="destroy" >
 		<property name="port" value="6080" />
 		<property name="xxlMqMessageDao" ref="xxlMqMessageDao" />
 	</bean>

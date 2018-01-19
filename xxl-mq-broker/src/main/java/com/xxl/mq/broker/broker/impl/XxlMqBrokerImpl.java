@@ -1,10 +1,10 @@
-package com.xxl.mq.client.broker;
+package com.xxl.mq.broker.broker.impl;
 
+import com.xxl.mq.broker.dao.IXxlMqMessageDao;
 import com.xxl.mq.client.broker.remote.IXxlMqBroker;
-import com.xxl.mq.client.broker.remote.IXxlMqMessageDao;
 import com.xxl.mq.client.message.MessageStatus;
 import com.xxl.mq.client.message.XxlMqMessage;
-import com.xxl.mq.client.rpc.netcom.NetComServerFactory;
+import com.xxl.mq.broker.rpc.NetComServerFactory;
 import com.xxl.mq.client.rpc.util.DateFormatUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,8 +22,8 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by xuxueli on 16/8/28.
  */
-public class XxlMqBroker implements IXxlMqBroker {
-    private final static Logger logger = LoggerFactory.getLogger(XxlMqBroker.class);
+public class XxlMqBrokerImpl implements IXxlMqBroker {
+    private final static Logger logger = LoggerFactory.getLogger(XxlMqBrokerImpl.class);
 
     // ---------------------- broker config ----------------------
     private static int port = 6080;
@@ -33,7 +33,7 @@ public class XxlMqBroker implements IXxlMqBroker {
         this.port = port;
     }
     public void setXxlMqMessageDao(IXxlMqMessageDao xxlMqMessageDao) {
-        XxlMqBroker.xxlMqMessageDao = xxlMqMessageDao;
+        XxlMqBrokerImpl.xxlMqMessageDao = xxlMqMessageDao;
     }
 
     // ---------------------- broker init ----------------------

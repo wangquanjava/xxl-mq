@@ -4,5 +4,5 @@ public enum MessageStatus {
     NEW,
     ING,
     SUCCESS,
-    FAIL;
+    FAIL
 }

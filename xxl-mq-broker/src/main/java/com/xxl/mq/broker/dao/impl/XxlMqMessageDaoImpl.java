@@ -1,6 +1,6 @@
 package com.xxl.mq.broker.dao.impl;
 
-import com.xxl.mq.client.broker.remote.IXxlMqMessageDao;
+import com.xxl.mq.broker.dao.IXxlMqMessageDao;
 import com.xxl.mq.client.message.XxlMqMessage;
 import org.mybatis.spring.SqlSessionTemplate;
 

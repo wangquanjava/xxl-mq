@@ -1,4 +1,4 @@
-package com.xxl.mq.client.broker.remote;
+package com.xxl.mq.broker.dao;
 
 import com.xxl.mq.client.message.XxlMqMessage;
 

@@ -25,14 +25,14 @@ public class ZkServiceRegistry {
 	private static ZooKeeper getInstance(){
 		if (zooKeeper==null) {
 			try {
-				if (INSTANCE_INIT_LOCK.tryLock(5, TimeUnit.SECONDS)) {
+				if (INSTANCE_INIT_LOCK.tryLock(5000, TimeUnit.SECONDS)) {
 
 					try {
 						// init zookeeper
 						/*final CountDownLatch countDownLatch = new CountDownLatch(1);
 						countDownLatch.countDown();
 						countDownLatch.await();*/
-						zooKeeper = new ZooKeeper(Environment.ZK_ADDRESS, 10000, new Watcher() {
+						zooKeeper = new ZooKeeper(Environment.ZK_ADDRESS, 1000, new Watcher() {
 							@Override
 							public void process(WatchedEvent event) {
 

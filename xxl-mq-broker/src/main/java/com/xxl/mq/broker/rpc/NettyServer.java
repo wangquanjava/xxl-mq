@@ -1,6 +1,5 @@
-package com.xxl.mq.client.rpc.netcom.server;
+package com.xxl.mq.broker.rpc;
 
-import com.xxl.mq.client.rpc.netcom.NetComServerFactory;
 import com.xxl.mq.client.rpc.netcom.codec.NettyDecoder;
 import com.xxl.mq.client.rpc.netcom.codec.NettyEncoder;
 import com.xxl.mq.client.rpc.netcom.codec.model.RpcRequest;
@@ -31,14 +30,15 @@ public class NettyServer {
 		        EventLoopGroup workerGroup = new NioEventLoopGroup();
 		        try {
 		            ServerBootstrap bootstrap = new ServerBootstrap();
-		            bootstrap.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class)
-		                .childHandler(new ChannelInitializer<SocketChannel>() {
-		                    @Override
-		                    public void initChannel(SocketChannel channel) throws Exception {
-		                        channel.pipeline()
-		                            .addLast(new NettyDecoder(RpcRequest.class))
-		                            .addLast(new NettyEncoder(RpcResponse.class))
-		                            .addLast(new NettyServerHandler());
+		            bootstrap.group(bossGroup, workerGroup)
+							.channel(NioServerSocketChannel.class)
+		                	.childHandler(new ChannelInitializer<SocketChannel>() {
+								@Override
+								public void initChannel(SocketChannel channel) throws Exception {
+								channel.pipeline()
+									.addLast(new NettyDecoder(RpcRequest.class))
+									.addLast(new NettyEncoder(RpcResponse.class))
+									.addLast(new NettyServerHandler());
 		                    }
 		                })
 		                .option(ChannelOption.SO_BACKLOG, 128)
