@@ -43,9 +43,9 @@ public class QueueConsumerThread extends Thread {
         while (true) {
             try {
                 // check load
-                ZkQueueConsumerUtil.ActiveInfo checkPull = ZkQueueConsumerUtil.isActice(annotation);
+                ZkQueueConsumerUtil.ActiveInfo checkPull = ZkQueueConsumerUtil.isActive(annotation);
                 if (checkPull != null) {
-                    logger.info(">>>>>>>>>>> xxl-mq, isActice: consumer={}, ActiveInfo={}", annotation, checkPull.toString());
+                    logger.info(">>>>>>>>>>> xxl-mq, isActive: consumer={}, ActiveInfo={}", annotation, checkPull.toString());
 
                     // load
                     List<XxlMqMessage> messageList = XxlMqClient.getiXxlMqBroker().pullNewMessage(annotation.value(), pagesize, checkPull.rank, checkPull.total);
@@ -54,7 +54,7 @@ public class QueueConsumerThread extends Thread {
                         for (XxlMqMessage msg : messageList) {
 
                             // check consumer
-                            ZkQueueConsumerUtil.ActiveInfo checkConsume = ZkQueueConsumerUtil.isActice(annotation);
+                            ZkQueueConsumerUtil.ActiveInfo checkConsume = ZkQueueConsumerUtil.isActive(annotation);
                             if (!(checkConsume != null && checkConsume.rank == checkPull.rank && checkConsume.total == checkPull.total)) {
                                 break;
                             }
@@ -102,7 +102,7 @@ public class QueueConsumerThread extends Thread {
 
                 } else {
                     TimeUnit.SECONDS.sleep(5);
-                    logger.debug(">>>>>>>>>>> xxl-mq, isActice(QUEUE) fail, registryKey:{}", annotation.value());
+                    logger.debug(">>>>>>>>>>> xxl-mq, isActive(QUEUE) fail, registryKey:{}", annotation.value());
                 }
 
             } catch (Exception e) {

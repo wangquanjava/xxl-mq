@@ -206,7 +206,7 @@ public class ZkQueueConsumerUtil {
     }
 
     // ------------------------------ public util ------------------------------
-    public static ActiveInfo isActice(MqConsumer annotation) {
+    public static ActiveInfo isActive(MqConsumer annotation) {
         // info
         String name = annotation.value();
         MqConsumerType type = annotation.type();
