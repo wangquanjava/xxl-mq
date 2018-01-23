@@ -40,21 +40,10 @@ public class NetComClientProxy implements FactoryBean<Object> {
 					@Override
 					public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 						
-						// request
-						RpcRequest request = new RpcRequest();
-						request.setRegistryKey(registryKey);
-	                    request.setRequestId(UUID.randomUUID().toString());
-	                    request.setCreateMillisTime(System.currentTimeMillis());
-	                    request.setClassName(method.getDeclaringClass().getName());
-	                    request.setMethodName(method.getName());
-	                    request.setParameterTypes(method.getParameterTypes());
-	                    request.setParameters(args);
+						// 获取request对象
+						RpcRequest request = wrapRpcRequest(method, args);
 
-						if (request.getRegistryKey()==null) {
-							request.setRegistryKey(request.getClassName());
-						}
-	                    
-	                    // send
+	                    // 进行发送
 	                    RpcResponse response = NettyClient.send(request);
 	                    
 	                    // valid response
@@ -71,6 +60,23 @@ public class NetComClientProxy implements FactoryBean<Object> {
 					}
 				});
 	}
+
+	private RpcRequest wrapRpcRequest(Method method, Object[] args) {
+		RpcRequest request = new RpcRequest();
+		request.setRegistryKey(registryKey);
+		request.setRequestId(UUID.randomUUID().toString());
+		request.setCreateMillisTime(System.currentTimeMillis());
+		request.setClassName(method.getDeclaringClass().getName());
+		request.setMethodName(method.getName());
+		request.setParameterTypes(method.getParameterTypes());
+		request.setParameters(args);
+
+		if (request.getRegistryKey()==null) {
+			request.setRegistryKey(request.getClassName());
+		}
+		return request;
+	}
+
 	@Override
 	public Class<?> getObjectType() {
 		return iface;

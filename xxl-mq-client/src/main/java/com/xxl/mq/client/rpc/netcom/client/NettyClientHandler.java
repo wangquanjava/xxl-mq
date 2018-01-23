@@ -18,7 +18,6 @@ public class NettyClientHandler extends SimpleChannelInboundHandler<RpcResponse>
 	protected void channelRead0(ChannelHandlerContext ctx, RpcResponse response) throws Exception {
 		RpcCallbackFuture future = RpcCallbackFuture.futurePool.get(response.getRequestId());
 		future.setResponse(response);
-		RpcCallbackFuture.futurePool.put(response.getRequestId(), future);
     }
 	
 	@Override

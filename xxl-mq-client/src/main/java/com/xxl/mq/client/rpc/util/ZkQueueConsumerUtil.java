@@ -70,8 +70,8 @@ public class ZkQueueConsumerUtil {
                                 if ((event.getType() == Event.EventType.NodeChildrenChanged
                                         && event.getPath() != null
                                         && event.getPath().startsWith(Environment.ZK_CONSUMER_PATH)
-                                        ) ||
-                                        event.getType() == Event.EventType.None) {
+                                        )
+                                        || event.getType() == Event.EventType.None) {
                                     try {
                                         discoverConsumers();
                                     } catch (Exception e) {
@@ -129,20 +129,20 @@ public class ZkQueueConsumerUtil {
         // address
         String address = localAddressRandom;
 
-        // muit registry
+        // multi registry
         for (String registryKey : registryKeyList) {
 
-            // "resigtry key" path : /xxl-rpc/registry-key
+            // "register key" path : /xxl-rpc/registry-key
             String registryKeyPath = Environment.ZK_CONSUMER_PATH.concat("/").concat(registryKey);
             Stat registryKeyPathStat = getInstance().exists(registryKeyPath, false);
             if (registryKeyPathStat == null) {
                 getInstance().create(registryKeyPath, new byte[]{}, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
             }
 
-            // "resigtry key's address" path : /xxl-rpc/registry-key/address
+            // "register key's address" path : /xxl-rpc/registry-key/address
             String registryKeyAddressPath = registryKeyPath.concat("/").concat(address);
-            Stat addreddStat = getInstance().exists(registryKeyAddressPath, false);
-            if (addreddStat == null) {
+            Stat addressStat = getInstance().exists(registryKeyAddressPath, false);
+            if (addressStat == null) {
                 String path = getInstance().create(registryKeyAddressPath, address.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);    // must be EPHEMERAL
             }
             logger.info(">>>>>>>>>>> xxl-rpc registe consumer item, registryKey:{}, address:{}, registryKeyAddressPath:{}", registryKey, address, registryKeyAddressPath);
@@ -181,7 +181,7 @@ public class ZkQueueConsumerUtil {
 
         try {
             for (String registryKey : consumerAddress.keySet()) {
-                Set<String> addressSet = new HashSet<String>();
+                Set<String> addressSet = new HashSet<>();
 
                 // "resigtry key" path : /xxl-rpc/registry-key
                 String registryKeyPath = Environment.ZK_CONSUMER_PATH.concat("/").concat(registryKey);
@@ -214,30 +214,32 @@ public class ZkQueueConsumerUtil {
         // load address set
         Set<String> addressSet = consumerAddress.get(name);
         if (addressSet == null) {
+            // 代表还未初始化过
             consumerAddress.put(name, new HashSet<String>());
             discoverConsumers();
             addressSet = consumerAddress.get(name);
         }
         if (addressSet.size() == 0) {
+            // 代表初始化了，但是就是没有数据
             return null;
         }
 
         // parse rank
         TreeSet<String> sortSet = new TreeSet<String>(addressSet);
-        int index = 0;
+        int rank = 0; // 本机地址在所有消费者中的位置
         for (String item : sortSet) {
             if (item.equals(localAddressRandom)) {
                 break;
             }
-            index++;
+            rank++;
         }
         String registryTreeKeys = MessageFormat.format("LocalRegistryKey={0}, AllRegistryTree={1}", localAddressRandom, sortSet.toString());
 
         // for biz
         if (type == QUEUE) {
-            return new ActiveInfo(index, sortSet.size(), registryTreeKeys);
+            return new ActiveInfo(rank, sortSet.size(), registryTreeKeys);
         } else if (type == SERIAL_QUEUE) {
-            if (index == 0) {
+            if (rank == 0) {
                 return new ActiveInfo(0, 1, registryTreeKeys);
             }
             return null;

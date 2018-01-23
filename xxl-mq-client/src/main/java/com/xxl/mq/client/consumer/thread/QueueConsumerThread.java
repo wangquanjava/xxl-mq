@@ -63,8 +63,10 @@ public class QueueConsumerThread extends Thread {
 
                             // lock message
                             String lockAddMsg = MessageFormat.format("<hr>》》》时间: {0} <br>》》》操作: 消息锁定(status>>>ING)<br>》》》注册信息: {1}", tim, checkConsume.toString());
+                            // 锁定数据
                             int lockRet = XxlMqClient.getiXxlMqBroker().lockMessage(msg.getId(), lockAddMsg);
                             if (lockRet < 1) {
+                                // 锁定失败，跳过该消息
                                 continue;
                             }
 
