@@ -1,10 +1,10 @@
 package com.xxl.mq.broker.broker.impl;
 
 import com.xxl.mq.broker.dao.IXxlMqMessageDao;
+import com.xxl.mq.broker.rpc.NetComServerFactory;
 import com.xxl.mq.client.broker.remote.IXxlMqBroker;
 import com.xxl.mq.client.message.MessageStatus;
 import com.xxl.mq.client.message.XxlMqMessage;
-import com.xxl.mq.broker.rpc.NetComServerFactory;
 import com.xxl.mq.client.rpc.util.DateFormatUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,6 +32,7 @@ public class XxlMqBrokerImpl implements IXxlMqBroker {
     public void setPort(int port) {
         this.port = port;
     }
+
     public void setXxlMqMessageDao(IXxlMqMessageDao xxlMqMessageDao) {
         XxlMqBrokerImpl.xxlMqMessageDao = xxlMqMessageDao;
     }
@@ -87,15 +88,15 @@ public class XxlMqBrokerImpl implements IXxlMqBroker {
                 while (true) {
                     try {
                         List<Integer> msgIds = xxlMqMessageDao.retryMessageIds(100, MessageStatus.FAIL.name());
-                        if (msgIds!=null && msgIds.size()>0) {
+                        if (msgIds != null && msgIds.size() > 0) {
                             waitTim = 5;
-                            for (int id: msgIds) {
+                            for (int id : msgIds) {
                                 String addMsg = MessageFormat.format("<hr>》》》时间: {0} <br>》》》操作: 失败消息触发重试,状态自动还原,剩余重试次数-1(status>>>NEW)", DateFormatUtil.formatDateTime(new Date()));
                                 xxlMqMessageDao.retryStatusFresh(id, addMsg, MessageStatus.FAIL.name(), MessageStatus.NEW.name());
                             }
                         } else {
                             waitTim += 5;
-                            if (waitTim>60) {
+                            if (waitTim > 60) {
                                 waitTim = 60;
                             }
                         }
@@ -114,13 +115,14 @@ public class XxlMqBrokerImpl implements IXxlMqBroker {
         new NetComServerFactory(port, serviceMap);
 
     }
-    public void destroy(){
+
+    public void destroy() {
     }
 
     // ---------------------- broker proxy ----------------------
     @Override
     public int saveMessage(XxlMqMessage message) {
-        return newMessageQueue.add(message)?1:-1;
+        return newMessageQueue.add(message) ? 1 : -1;
     }
 
     @Override
@@ -135,7 +137,7 @@ public class XxlMqBrokerImpl implements IXxlMqBroker {
     }
 
     public int consumeCallbackMessage(XxlMqMessage message) {
-        return consumeCallbackMessageQueue.add(message)?1:-1;
+        return consumeCallbackMessageQueue.add(message) ? 1 : -1;
     }
 
 }

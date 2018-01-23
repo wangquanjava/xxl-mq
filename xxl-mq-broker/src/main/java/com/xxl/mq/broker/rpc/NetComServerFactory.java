@@ -15,84 +15,80 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * netcom init
+ *
  * @author xuxueli 2015-10-31 22:54:27
  */
 public class NetComServerFactory {
-	private static final Logger logger = LoggerFactory.getLogger(NetComServerFactory.class);
+    private static final Logger logger = LoggerFactory.getLogger(NetComServerFactory.class);
 
-	// ---------------------- server start ----------------------
-	private static int port;
-	private static Map<String, Object> regitsryMap;
-	public NetComServerFactory(int port, Map<String, Object> serviceMap) throws Exception {
-		this.port = port;
-		this.regitsryMap = serviceMap;
+    // ---------------------- server start ----------------------
+    private static int port;
+    private static Map<String, Object> regitsryMap;
+    private static Executor executor = Executors.newCachedThreadPool();
 
-		// setver start
-		new NettyServer().start(port);
-	}
+    public NetComServerFactory(int port, Map<String, Object> serviceMap) throws Exception {
+        this.port = port;
+        this.regitsryMap = serviceMap;
 
-	// registry (service) each 120s
-	private static Executor executor = Executors.newCachedThreadPool();
-	public static void registry(){
-		try {
-			ZkServiceRegistry.registerServices(port, regitsryMap.keySet());
-		} catch (Exception e) {
-			logger.error("", e);
-		}
-		executor.execute(new Runnable() {
-			@Override
-			public void run() {
-				while (true) {
-					// registry
-					try {
-						TimeUnit.SECONDS.sleep(60L);
-						ZkServiceRegistry.registerServices(port, regitsryMap.keySet());
-					} catch (Exception e) {
-						logger.error("", e);
-					}
-				}
-			}
-		});
-	}
+        // setver start
+        new NettyServer().start(port);
 
-	// ---------------------- server invoke ----------------------
-	/**
-	 * init local rpc service map
-	 */
+        // 开启异步线程，时刻把本地broker地址写到zk
+        NetComServerFactory.registry();
+    }
 
-	public static RpcResponse invokeService(RpcRequest request, Object serviceBean) {
-		if (serviceBean==null) {
-			serviceBean = regitsryMap.get(request.getRegistryKey());
-		}
-		if (serviceBean == null) {
-			// TODO
-		}
+    // registry (service) each 120s
+    public static void registry() {
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                while (true) {
+                    // registry
+                    try {
+                        ZkServiceRegistry.registerServices(port, regitsryMap.keySet());
+                        TimeUnit.SECONDS.sleep(60L);
+                    } catch (Exception e) {
+                        logger.error("", e);
+                    }
+                }
+            }
+        });
+    }
 
-		RpcResponse response = new RpcResponse();
-		response.setRequestId(request.getRequestId());
+    // ---------------------- server invoke ----------------------
 
-		try {
-			Class<?> serviceClass = serviceBean.getClass();
-			String methodName = request.getMethodName();
-			Class<?>[] parameterTypes = request.getParameterTypes();
-			Object[] parameters = request.getParameters();
+    /**
+     * init local rpc service map
+     */
+
+    public static RpcResponse invokeService(RpcRequest request) {
+        Object serviceBean = regitsryMap.get(request.getRegistryKey());
+
+        RpcResponse response = new RpcResponse();
+        response.setRequestId(request.getRequestId());
+
+        try {
+            Class<?> serviceClass = serviceBean.getClass();
+            String methodName = request.getMethodName();
+            Class<?>[] parameterTypes = request.getParameterTypes();
+            Object[] parameters = request.getParameters();
 
             /*Method method = serviceClass.getMethod(methodName, parameterTypes);
             method.setAccessible(true);
             return method.invoke(serviceBean, parameters);*/
 
-			FastClass serviceFastClass = FastClass.create(serviceClass);
-			FastMethod serviceFastMethod = serviceFastClass.getMethod(methodName, parameterTypes);
+            FastClass serviceFastClass = FastClass.create(serviceClass);
+            FastMethod serviceFastMethod = serviceFastClass.getMethod(methodName, parameterTypes);
 
-			Object result = serviceFastMethod.invoke(serviceBean, parameters);
+            Object result = serviceFastMethod.invoke(serviceBean, parameters);
 
-			response.setResult(result);
-		} catch (Throwable t) {
-			t.printStackTrace();
-			response.setError(t);
-		}
+            response.setResult(result);
+        } catch (Throwable t) {
+            t.printStackTrace();
+            response.setError(t);
+        }
 
-		return response;
-	}
-	
+        return response;
+    }
+
 }

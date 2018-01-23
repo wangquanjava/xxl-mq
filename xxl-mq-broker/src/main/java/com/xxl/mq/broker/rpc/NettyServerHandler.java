@@ -17,9 +17,8 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<RpcRequest> 
 
     @Override
     public void channelRead0(final ChannelHandlerContext ctx, RpcRequest request) throws Exception {
-    	
-    	// invoke
-        RpcResponse response = NetComServerFactory.invokeService(request, null);
+    	// 代理执行方法
+        RpcResponse response = NetComServerFactory.invokeService(request);
     	
         ctx.writeAndFlush(response);
         

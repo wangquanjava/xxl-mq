@@ -47,7 +47,6 @@ public class NettyServer {
 		                .childOption(ChannelOption.SO_KEEPALIVE, true);
 		            ChannelFuture future = bootstrap.bind(port).sync();
 					logger.info(">>>>>>>>>>> xxl-rpc server start success, netcon={}, port={}", NettyServer.class.getName(), port);
-					NetComServerFactory.registry();
 					future.channel().closeFuture().sync();
 		        } catch (InterruptedException e) {
 		        	logger.error("", e);
